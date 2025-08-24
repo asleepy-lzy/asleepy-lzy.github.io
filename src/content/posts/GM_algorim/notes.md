@@ -393,70 +393,65 @@ Barahona F, Anbil R. The volume algorithm: producing primal solutions with a sub
 
 ---
 ### 算法流程
-#### 初始化
 
-1. 取初始 $\bar\pi$；解一次子问题(6)得 $\bar x,\ \bar z$。
-2. 设置：$\pi\leftarrow\bar\pi$，$\ v\leftarrow b-A\bar x$，$\ f\in(0,2)$（如 $f=1$），$\ \alpha_{\max}\approx 0.1$。
-3. 若有原可行解则设 $\mathrm{UB}$；否则 $\mathrm{UB} \leftarrow +\infty$。
+**Step 0. 初始化**
+
+* 给定初始对偶向量 $\bar{\pi}$，解子问题，得到原始解 $\bar{x}$ 和对偶值 $\bar{z}$。
+* 设置：
+
+  $$
+  x^0 = \bar{x}, \quad z^0 = \bar{z}, \quad t = 1
+  $$
 
 ---
 
-#### 主循环（每轮包含“次迭代 + 可能的主更新”）
+**Step 1. 迭代更新**
 
-###### 1) 用体积中心的次梯度计算步长（原文式(7)）
+1. 计算次梯度：
 
-$$
-s \;=\; f\ \frac{\mathrm{UB}-\bar z}{\|v\|_2^2+\varepsilon}
-$$
+   $$
+   v^t = b - A \bar{x}
+   $$
 
-> 说明：若有不等式约束且对偶需 $\pi\ge0$，更新后需对 $\pi$ 做**非负投影**。
+2. 构造新的对偶向量：
 
-###### 2) 对偶试探更新
+   $$
+   \pi^t = \bar{\pi} + s v^t
+   $$
 
-$$
-\pi^{\text{trial}} \leftarrow \operatorname{Proj}_{\pi\ge0}\big(\bar\pi + s\,v\big)
-$$
+   其中步长 $s$ 由公式 (7) 给定。
 
-###### 3) 解子问题(6)
+3. 解子问题 (6)，得到原始解 $x^t$ 和目标值 $z^t$。
 
-* 用 $\pi^{\text{trial}}$ 解(6)，得 $x^{\text{trial}},\ z^{\text{trial}}$。
+4. 用体积化更新公式修正原始解：
 
-###### 4) 体积中心（凸组合）更新
+   $$
+   \bar{x} \;\leftarrow\; \alpha x^t + (1-\alpha)\bar{x}
+   $$
 
-* 令 $v^{\text{trial}}=b-Ax^{\text{trial}}$，$ \bar v=b-A\bar x$。
-* 计算
+   其中 $\alpha \in (0,1)$。
 
-  $$
-  \alpha_{\text{opt}}=\arg\min_{\alpha\in\mathbb R}\big\|\alpha v^{\text{trial}}+(1-\alpha)\bar v\big\|_2
-  $$
+---
 
-  若 $\alpha_{\text{opt}}<0$，取 $\alpha=\alpha_{\max}/10$；否则 $\alpha=\min\{\alpha_{\text{opt}},\alpha_{\max}\}$。
-* 更新体积中心：
+**Step 2. 接受/拒绝更新**
 
-  $$
-  \bar x \leftarrow \alpha\,x^{\text{trial}}+(1-\alpha)\,\bar x
-  $$
-
-##### 5) “主更新”判定
-
-* 若 $z^{\text{trial}}>\bar z$（**找到更好的对偶值**）：
+* 如果 $z^t > \bar{z}$，说明目标改善：
 
   $$
-  \bar\pi\leftarrow \pi^{\text{trial}},\quad \bar z\leftarrow z^{\text{trial}}
+  \bar{\pi} \;\leftarrow\; \pi^t, \quad \bar{z} \;\leftarrow\; z^t
   $$
 
-  （称为一次 **major iteration**）
-* 否则只完成一次 **minor iteration**（不刷新 $\bar\pi,\bar z$）。
+* 否则：保持 $\bar{\pi}, \bar{z}$ 不变，仅改进模型。
 
-###### 6) 步长系数 $f$ 的自适应
+---
 
-* 定义 $d = v^{\text{trial}}\cdot(b-Ax^{\text{trial}})$。
-* **分类**：
+**Step 3. 迭代控制**
 
-  * $z^{\text{trial}}>\bar z$ 且 $d\ge0$：**GREEN**（步长合理）→ $f\leftarrow1.1\,f$。
-  * $z^{\text{trial}}>\bar z$ 且 $d<0$：**YELLOW**（略偏大）→ $f$ 不变。
-  * 否则：**RED**（无改进）→ 记录连续 RED 计数；若达 20 次，则 $f\leftarrow 0.66\,f$、计数清零。
-* 同时可设置 $s$ 和 $\alpha$ 的上下界裁剪，避免数值爆炸/停滞。
+* 设置 $t \leftarrow t+1$，回到 **Step 1**，直到达到终止条件（如上下界差距 < 容忍度）。
+
+---
+
+
 
 
 
@@ -481,17 +476,8 @@ $$
 
 这给了一个“**分段线性下界**”。
 
-#### 2) 近端项（prox，稳定器）
 
-单靠 $m_k$ 会不够稳定。在模型上加一个二次近端项来**稳住迭代中心** $\bar x_k$：
-
-$$
-\min_x\ m_k(x)+\tfrac{\rho_k}{2}\,\|x-\bar x_k\|^2.
-$$
-
-$\rho_k>0$ 越大，步子越小（更稳）；越小，步子越大（更激进）。**这就是步长控制的核心旋钮**。
-
-#### 3) Level 思想（用“水平集”卡住模型）
+#### 2) Level 思想（用“水平集”卡住模型）
 
 维护**上界** $U_k=\min_{j\le k} f(x_j)$ 与**模型最优值** $M_k=\min_x m_k(x)$。选一个**水平**：
 
@@ -507,11 +493,11 @@ x_k^{\mathrm{trial}}
 \quad\text{s.t.}\quad m_k(x)\le L_k.
 $$
 
-直觉：不能一味地追求模型最小，而是**在能把下界推到 $L_k$ 的同时**，尽量离当前中心不远。
+
 
 ---
 
-#### 严重步 / 空步（serious / null）
+#### 3)严重步 / 空步（serious / null）
 
 * **严重步（serious step）**：如果试探点让真实函数值有“足够”改进，就**接受它作为新中心**
 
