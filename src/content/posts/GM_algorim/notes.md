@@ -302,7 +302,9 @@ $$
 
 
 ## Polyak步长
-
+### 论文
+Polyak, B. T. (1969). Minimization of unsmooth functionals. USSR Computational Mathematics and Mathematical Physics, 9(3), 14–29.
+### 算法
 我们希望最小化一个凸函数 $f: \mathbb{R}^n \to \mathbb{R}$：
 
 $$
@@ -322,7 +324,8 @@ $$
 
 ## Level-based Polyak stepsize（目标层次法）
 
-下面把文中回顾过的两种“用 level 值 $\bar f_k$ 近似 $f^\star$ 并动态校正”的方法讲全：**path-based level adjustment** 与 **decision-guided level adjustment（SDD/MDD）**。我先各自给出机制与推导/依据，再点评优缺点，最后小结对比。
+### 论文
+Liu A, Bragin M A, Chen X, Guan X. Accelerating level-value adjustment for the Polyak stepsize[J]. arXiv preprint arXiv:2311.18255, 2025.
 
 ---
 
@@ -359,13 +362,17 @@ $$
 ## **Volume Algorithm（VA）步长**
 
 ---
+### 论文
+
+Barahona F, Anbil R. The volume algorithm: producing primal solutions with a subgradient method[J]. Mathematical Programming, Series A, 2000, 87(3): 385-399. DOI:10.1007/s101070000134.
+### 定义
 
 * 线性规划（经 Dantzig–Wolfe 变换后的主问题）等价的**对偶**为
 
   $$
   \max_{z,\ \pi}\ z \quad \text{s.t.}\ z+\pi(A g_i-b)\le c g_i\quad(\forall i)
   $$
-* **定价/拉格朗日子问题（原文式(6)）**：给定对偶 $\pi$，解
+* **定价/拉格朗日子问题**：给定对偶 $\pi$，解
 
   $$
   \min_{x}\ z=(c-\pi A)x+\pi b\quad\text{s.t. } Dx=e,\ x\ge0
@@ -455,8 +462,9 @@ $$
 
 ---
 ## Bundle / Level method stepsizing
-
-#### 要解决的问题
+### 论文
+Lemaréchal C, Nemirovskii A, Nesterov Y. New variants of bundle methods[J]. Mathematical Programming, 1995, 69: 111–147.
+### 要解决的问题
 
 最小化**凸且可非光滑**的 $f:\mathbb{R}^n\to\mathbb{R}$。梯度可能不存在，但**次梯度**存在。
 
@@ -561,6 +569,9 @@ $$
 
 ## Barzilai–Borwein（BB）步长
 
+### 论文
+Barzilai, J., & Borwein, J. M. (1988). Two-point step size gradient methods. IMA Journal of Numerical Analysis, 8(1), 141–148. https://doi.org/10.1093/imanum/8.1.141
+### 定义
 $$
 \min_{x\in\mathbb R^n} f(x),\quad f\in C^1,\ \nabla f \text{ 可计算}.
 $$
@@ -621,7 +632,7 @@ $$
 2. **动量方向**
 
    $$
-   p_k \;=\; -\,g_k \;+\; \beta_k\,p_{k-1}.
+   p_k \;=\;(1-\beta)\,g_k \;+\; \beta_k\,p_{k-1}.
    $$
 
    （可选同义形式：$p_k=-g_k+\beta_k(x_k-x_{k-1})$）
@@ -634,6 +645,42 @@ $$
 
 ### 目的
 用惯性把“只看当前次梯度”的生硬走法，变成更平滑、方向更一致的走法，从而在非光滑/狭长谷地里少走回头路、少抖动，通常更快更稳。
+
+
+
+## Two-point heuristic stepsize
+
+### 论文：
+Carrabs F, Gaudioso M, Miglionico G. A two-point heuristic to calculate the stepsize in subgradient method with application to a network design problem[J]. EURO Journal on Computational Optimization, 2024, 12: 100092–100106. DOI:10.1016/j.ejco.2024.100092.
+
+### 方法核心：NSBB 两点步长（Nonsmooth Barzilai–Borwein）
+
+* 从 BB 方法回顾出发：用两次迭代间的信息近似 Hessian（或其逆），得到经典 BB 步长公式 $\alpha_k=\frac{\|\delta_k\|^2}{\delta_k^\top \gamma_k}$。
+* 论文提出：构造二次差值模型
+
+  $$
+  h_k(d)=\tfrac12\,u_k\,d^\top d+g_k^\top d
+  $$
+
+  并令它在 $d_{k-1}=-\delta_k$ 处等于真实差值 $f(x_{k-1})-f(x_k)$，于是得到
+
+  $$
+  u_k=\frac{2\big(f(x_{k-1})-f(x_k)+g_k^\top\delta_k\big)}{\|\delta_k\|^2},\quad
+  x_{k+1}=x_k-\frac{1}{u_k}\,g_k .
+  $$
+
+  在**严格凸二次**情形下，$\frac{1}{u_k}$ 与 BB 的 $\alpha_k$ 完全一致。
+* 写成次梯度法常用的标量序列 $t_k$ 形式：
+
+  $$
+  \alpha_k=t_k\|g_k\|,\quad
+  t_k=\frac{\|\delta_k\|^2\|g_k\|}{2\big(f(x_{k-1})-f(x_k)+g_k^\top\delta_k\big)} ,
+  $$
+
+  并对 $t_k$ 施加安全上下界 $t_m<t_k<t_M$。
+* **NSBB 基本算法**（三步）：初始化两点 $x_0,x_1$ 与 $t_m,t_M,k_{\max}$；每次在 $x_k$ 处计算 $f,g_k$ 与 $t_k$ 并截断到区间；更新
+  $x_{k+1}=x_k-\frac{t_k}{\|g_k\|}\,g_k$
+  并做终止判定。
 
 
 
