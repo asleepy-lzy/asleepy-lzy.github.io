@@ -1,6 +1,6 @@
 ---
 title: 摩尔投票排序
-published: 2025-08-31
+published: 2025-09-10
 description: "Leetcode刷题感想-摩尔投票排序"
 tags: [study, Leetcode]
 category: Study
