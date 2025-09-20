@@ -148,7 +148,7 @@ const bannerOffset =
 		<link rel="alternate" type="application/rss+xml" title={profileConfig.name} href={`${Astro.site}rss.xml`}/>
 
 	</head>
-	<body class=" min-h-screen transition " class:list={[{"lg:is-home": isHomePage, "enable-banner": enableBanner}]}
+	<body class=" min-h-screen transition w-full " class:list={[{"lg:is-home": isHomePage, "enable-banner": enableBanner}]}
 		  data-overlayscrollbars-initialize
 	>
 		<ConfigCarrier></ConfigCarrier>
@@ -166,6 +166,17 @@ const bannerOffset =
 }}>
 @tailwind components;
 @layer components {
+	/* Ensure full viewport coverage without clipping */
+	html, body {
+		@apply w-full;
+		overflow-x: visible;
+	}
+	
+	/* Allow animations and content to extend beyond containers */
+	#banner-wrapper, #swup-container {
+		overflow: visible;
+	}
+	
 	.enable-banner.is-home #banner-wrapper {
 		@apply h-[var(--banner-height-home)] translate-y-[var(--banner-height-extend)]
 	}
