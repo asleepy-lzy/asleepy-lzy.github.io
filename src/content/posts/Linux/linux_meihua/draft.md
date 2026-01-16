@@ -1,6 +1,6 @@
 ---
 title: Linux(美化)
-published: 2026-1-16
+published: 2026-01-16
 description: "linux美化记录"
 tags: [study, play]
 category: Play
