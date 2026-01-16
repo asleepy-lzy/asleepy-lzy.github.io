@@ -1,10 +1,10 @@
 import type {
+	CommentsConfig,
 	ExpressiveCodeConfig,
 	LicenseConfig,
 	NavBarConfig,
 	ProfileConfig,
 	SiteConfig,
-	CommentsConfig,
 } from "./types/config";
 import { LinkPreset } from "./types/config";
 
