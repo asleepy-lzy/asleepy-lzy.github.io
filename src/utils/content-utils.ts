@@ -89,6 +89,20 @@ export type FolderCategory = {
 	url: string;
 };
 
+export type FolderTreePost = {
+	slug: string;
+	title: string;
+	published: Date;
+};
+
+export type FolderTreeNode = {
+	name: string;
+	path: string;
+	count: number;
+	posts: FolderTreePost[];
+	children: FolderTreeNode[];
+};
+
 export async function getCategoryList(): Promise<Category[]> {
 	const allBlogPosts = await getCollection<"posts">("posts", ({ data }) => {
 		return import.meta.env.PROD ? data.draft !== true : true;
@@ -151,4 +165,62 @@ export async function getFolderCategoryList(): Promise<FolderCategory[]> {
 		count: count[key],
 		url: getFolderUrl(key),
 	}));
+}
+
+export async function getFolderTree(): Promise<FolderTreeNode> {
+	const allBlogPosts = await getCollection<"posts">("posts", ({ data }) => {
+		return import.meta.env.PROD ? data.draft !== true : true;
+	});
+
+	const root = {
+		name: "/",
+		path: "",
+		count: 0,
+		posts: [] as FolderTreePost[],
+		children: [] as FolderTreeNode[],
+		_childMap: new Map<string, any>(),
+	};
+
+	for (const post of allBlogPosts) {
+		const parts = post.slug.split("/");
+		const folders = parts.slice(0, -1);
+		let node: any = root;
+		node.count++;
+		for (const seg of folders) {
+			if (!node._childMap.has(seg)) {
+				const child = {
+					name: seg,
+					path: node.path ? `${node.path}/${seg}` : seg,
+					count: 0,
+					posts: [] as FolderTreePost[],
+					children: [] as FolderTreeNode[],
+					_childMap: new Map<string, any>(),
+				};
+				node._childMap.set(seg, child);
+				node.children.push(child);
+			}
+			node = node._childMap.get(seg);
+			node.count++;
+		}
+
+		node.posts.push({
+			slug: post.slug,
+			title: post.data.title,
+			published: post.data.published,
+		});
+	}
+
+	const sortNode = (n: any): FolderTreeNode => {
+		n.children.sort((a: any, b: any) =>
+			a.name.toLowerCase().localeCompare(b.name.toLowerCase()),
+		);
+		n.posts.sort((a: FolderTreePost, b: FolderTreePost) =>
+			a.published > b.published ? -1 : 1,
+		);
+		n.children = n.children.map(sortNode);
+		delete n._childMap;
+		return n as FolderTreeNode;
+	};
+
+	return sortNode(root);
 }

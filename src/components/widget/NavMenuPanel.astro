@@ -1,9 +1,6 @@
 ---
 import { Icon } from "astro-icon/components";
-import I18nKey from "../../i18n/i18nKey";
-import { i18n } from "../../i18n/translation";
 import { type NavBarLink } from "../../types/config";
-import { getFolderCategoryList } from "../../utils/content-utils";
 import { url } from "../../utils/url-utils";
 
 interface Props {
@@ -11,28 +8,8 @@ interface Props {
 }
 
 const links = Astro.props.links;
-const folderCategories = await getFolderCategoryList();
 ---
 <div id="nav-menu-panel" class:list={["float-panel float-panel-closed absolute transition-all fixed right-4 px-2 py-2"]}>
-    {folderCategories.length > 0 && (
-        <div class="px-3 pt-2 pb-1 text-xs uppercase tracking-wide text-30">
-            {i18n(I18nKey.folders)}
-        </div>
-    )}
-    {folderCategories.map((c) => (
-        <a href={c.url} class="group flex justify-between items-center py-2 pl-3 pr-1 rounded-lg gap-8
-            hover:bg-[var(--btn-plain-bg-hover)] active:bg-[var(--btn-plain-bg-active)] transition
-        "
-        >
-            <div class="transition text-black/75 dark:text-white/75 font-bold group-hover:text-[var(--primary)] group-active:text-[var(--primary)]">
-                {c.name}
-            </div>
-            <div class="text-xs text-30">{c.count}</div>
-        </a>
-    ))}
-    {folderCategories.length > 0 && (
-        <div class="my-2 border-b border-dashed border-[var(--line-divider)]"></div>
-    )}
     {links.map((link) => (
         <a href={link.external ? link.url : url(link.url)} class="group flex justify-between items-center py-2 pl-3 pr-1 rounded-lg gap-8
             hover:bg-[var(--btn-plain-bg-hover)] active:bg-[var(--btn-plain-bg-active)] transition
