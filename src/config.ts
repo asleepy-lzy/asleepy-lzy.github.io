@@ -4,6 +4,7 @@ import type {
 	NavBarConfig,
 	ProfileConfig,
 	SiteConfig,
+	CommentsConfig,
 } from "./types/config";
 import { LinkPreset } from "./types/config";
 
@@ -87,4 +88,21 @@ export const expressiveCodeConfig: ExpressiveCodeConfig = {
 	// Note: Some styles (such as background color) are being overridden, see the astro.config.mjs file.
 	// Please select a dark theme, as this blog theme currently only supports dark background color
 	theme: "github-dark",
+};
+
+export const commentsConfig: CommentsConfig = {
+	enable: true,
+	provider: "giscus",
+	giscus: {
+		repo: "asleepy-lzy/asleepy-lzy.github.io",
+		repoId: "R_kgDOPiMx8w",
+		category: "Q&A",
+		categoryId: "DIC_kwDOPiMx884C1B69",
+		mapping: "pathname",
+		reactionsEnabled: true,
+		emitMetadata: false,
+		inputPosition: "bottom",
+		lang: "zh-CN",
+		loading: "lazy",
+	},
 };

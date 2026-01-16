@@ -9,7 +9,7 @@ draft: false
 
 
 
-寒假期间对 Linux 桌面（GNOME）进行了一次彻底的美化和效率改造。以下是最终达成的效果清单及关键配置工具，主要涵盖了锁屏、窗口管理、终端环境及开发工具。
+寒假期间对 Linux 桌面（ubuntu。04，GNOME46）进行了一次彻底的美化和效率改造。以下是最终达成的效果清单及关键配置工具，主要涵盖了锁屏、窗口管理、终端环境及开发工具。
 
 ## 1. 桌面环境与外观 (GNOME)
 
@@ -19,7 +19,7 @@ draft: false
 ### GNOME 扩展 (Extensions)
 使用 `gnome-extensions` 管理器配置了以下核心插件，提升视觉效果和交互体验：
 * **Blur My Shell**: 给 Shell 界面（如概览、顶栏）添加毛玻璃模糊效果，质感提升显著。
-* **Dash to Dock Animated**: 让 Dock 栏拥有更流畅的动效。
+* **Dash2Dock Animated**: 让 Dock 栏拥有更流畅的动效。
 * **Tiling Window Management**:
     * *方案 A*: **PaperWM** (横向卷轴式窗口管理，像翻书一样浏览窗口)
     * *方案 B*: **Forge** (提供类似 i3/Sway 的平铺窗口体验)
@@ -27,7 +27,7 @@ draft: false
 
 ### 全局配色：Catppuccin
 全系统采用 **[Catppuccin (猫布丁)](https://github.com/catppuccin)** 主题配色。
-* 应用范围：GTK 主题、终端、编辑器、Shell，浏览器000000。
+* 应用范围：GTK 主题、终端、编辑器、Shell，浏览器。
 * 风格特点：低饱和度粉彩配色，护眼且现代。
 
 ## 2. 终端与 Shell 环境

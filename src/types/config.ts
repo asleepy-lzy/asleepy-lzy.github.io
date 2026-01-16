@@ -100,3 +100,20 @@ export type BlogPostData = {
 export type ExpressiveCodeConfig = {
 	theme: string;
 };
+
+export type CommentsConfig = {
+	enable: boolean;
+	provider: "giscus";
+	giscus: {
+		repo: string;
+		repoId: string;
+		category: string;
+		categoryId: string;
+		mapping: "pathname" | "url" | "title" | "og:title" | "specific";
+		reactionsEnabled: boolean;
+		emitMetadata: boolean;
+		inputPosition: "top" | "bottom";
+		lang: string;
+		loading: "lazy" | "eager";
+	};
+};

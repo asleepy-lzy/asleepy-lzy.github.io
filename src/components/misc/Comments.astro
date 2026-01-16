@@ -1,0 +1,50 @@
+---
+import { commentsConfig } from "../../config";
+
+const cfg = commentsConfig;
+const giscus = cfg.giscus;
+const enabled = cfg.enable && cfg.provider === "giscus";
+const theme = "preferred_color_scheme";
+---
+
+{enabled && (
+	<section id="comments" class="card-base mt-6 px-6 md:px-9 py-6 rounded-[var(--radius-large)]">
+		<script
+			src="https://giscus.app/client.js"
+			data-repo={giscus.repo}
+			data-repo-id={giscus.repoId}
+			data-category={giscus.category}
+			data-category-id={giscus.categoryId}
+			data-mapping={giscus.mapping}
+			data-strict="1"
+			data-reactions-enabled={giscus.reactionsEnabled ? "1" : "0"}
+			data-emit-metadata={giscus.emitMetadata ? "1" : "0"}
+			data-input-position={giscus.inputPosition}
+			data-theme={theme}
+			data-lang={giscus.lang}
+			data-loading={giscus.loading}
+			crossorigin="anonymous"
+			async
+		></script>
+		<script is:inline>
+			const giscusOrigin = "https://giscus.app";
+			function getTheme() {
+				return document.documentElement.classList.contains("dark") ? "dark" : "light";
+			}
+			function updateGiscusTheme() {
+				const iframe = document.querySelector("iframe.giscus-frame");
+				if (!iframe) return;
+				iframe.contentWindow?.postMessage(
+					{ giscus: { setConfig: { theme: getTheme() } } },
+					giscusOrigin,
+				);
+			}
+			const observer = new MutationObserver(updateGiscusTheme);
+			observer.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
+			window.addEventListener("message", (event) => {
+				if (event.origin !== giscusOrigin) return;
+				updateGiscusTheme();
+			});
+		</script>
+	</section>
+)}
