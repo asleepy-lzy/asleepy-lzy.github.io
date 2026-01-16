@@ -44,7 +44,7 @@ const folderCategories = await getFolderCategoryList();
                         <Icon name="material-symbols:keyboard-arrow-down-rounded" class="text-[1.25rem] ml-1"></Icon>
                     </div>
                 </button>
-                <div id="category-menu-panel" class="float-panel float-panel-closed absolute top-12 left-0 px-2 py-2 min-w-[12rem]">
+                <div id="category-menu-panel" class="card-base float-panel-closed absolute left-0 mt-4 px-2 py-2 min-w-[12rem] shadow-xl dark:shadow-none transition">
                     {folderCategories.map((c) => (
                         <a href={c.url} class="group flex justify-between items-center py-2 pl-3 pr-2 rounded-lg gap-6
                             hover:bg-[var(--btn-plain-bg-hover)] active:bg-[var(--btn-plain-bg-active)] transition

@@ -1,0 +1,188 @@
+---
+import { url } from "../utils/url-utils";
+
+const modelUrl = url("/live2d/22.2018.spring/22.2018.spring.model.json");
+const bundleUrl = url("/live2d/bundle.js");
+const deviceUrl = url("/live2d/device.min.js");
+
+const width = 280;
+const height = 420;
+---
+
+<div id="live2d-wrapper" aria-hidden="true">
+	<div id="live2d-speech" role="status" aria-live="polite"></div>
+	<canvas id="live2d-canvas" width={width} height={height}></canvas>
+</div>
+
+<script src={deviceUrl}></script>
+<script src={bundleUrl}></script>
+<script is:inline define:vars={{ modelUrl, width, height }}>
+	(function () {
+		if (window.__live2dInited) return;
+		window.__live2dInited = true;
+
+		function tryInit() {
+			if (typeof window.loadlive2d !== "function") {
+				setTimeout(tryInit, 200);
+				return;
+			}
+
+			const canvas = document.getElementById("live2d-canvas");
+			if (!canvas) return;
+
+			canvas.setAttribute("width", String(width));
+			canvas.setAttribute("height", String(height));
+			window.loadlive2d("live2d-canvas", modelUrl);
+
+			canvas.addEventListener("click", () => {
+				const wrapper = document.getElementById("live2d-wrapper");
+				if (!wrapper) return;
+				wrapper.classList.remove("live2d-poke");
+				void wrapper.offsetHeight;
+				wrapper.classList.add("live2d-poke");
+			});
+		}
+
+		function initControls() {
+			const wrapper = document.getElementById("live2d-wrapper");
+			const speech = document.getElementById("live2d-speech");
+			if (!wrapper || !speech) return;
+
+			let dragging = false;
+			let startX = 0;
+			let startY = 0;
+			let startLeft = 0;
+			let startTop = 0;
+			let moved = false;
+			let suppressClick = false;
+			let speechTimer = null;
+
+			const lines = [
+				"啊…你来了。",
+				"别太靠近，我怕我会笑。",
+				"今天也要努力活下去。",
+				"你在看我吗？",
+				"嘘…我在休息。",
+				"风有点凉。",
+				"小声点，我还在想事情。",
+				"给你一杯热茶。",
+			];
+
+			function onPointerDown(event) {
+				dragging = true;
+				moved = false;
+				const rect = wrapper.getBoundingClientRect();
+				startX = event.clientX;
+				startY = event.clientY;
+				startLeft = rect.left;
+				startTop = rect.top;
+				wrapper.style.left = `${startLeft}px`;
+				wrapper.style.top = `${startTop}px`;
+				wrapper.style.bottom = "auto";
+				event.currentTarget.setPointerCapture(event.pointerId);
+			}
+
+			function onPointerMove(event) {
+				if (!dragging) return;
+				const dx = event.clientX - startX;
+				const dy = event.clientY - startY;
+				if (Math.abs(dx) > 5 || Math.abs(dy) > 5) moved = true;
+				const maxLeft = window.innerWidth - wrapper.offsetWidth;
+				const maxTop = window.innerHeight - wrapper.offsetHeight;
+				const nextLeft = Math.min(Math.max(0, startLeft + dx), maxLeft);
+				const nextTop = Math.min(Math.max(0, startTop + dy), maxTop);
+				wrapper.style.left = `${nextLeft}px`;
+				wrapper.style.top = `${nextTop}px`;
+			}
+
+			function onPointerUp(event) {
+				dragging = false;
+				suppressClick = moved;
+				event.currentTarget.releasePointerCapture(event.pointerId);
+			}
+
+			wrapper.addEventListener("pointerdown", onPointerDown);
+			wrapper.addEventListener("pointermove", onPointerMove);
+			wrapper.addEventListener("pointerup", onPointerUp);
+			wrapper.addEventListener("pointercancel", onPointerUp);
+
+			wrapper.addEventListener("click", () => {
+				if (suppressClick) {
+					suppressClick = false;
+					return;
+				}
+				const nextLine = lines[Math.floor(Math.random() * lines.length)];
+				speech.textContent = nextLine;
+				speech.classList.add("live2d-speech-show");
+				if (speechTimer) window.clearTimeout(speechTimer);
+				speechTimer = window.setTimeout(() => {
+					speech.classList.remove("live2d-speech-show");
+				}, 8000);
+			});
+		}
+
+		if (document.readyState === "loading") {
+			document.addEventListener("DOMContentLoaded", tryInit);
+			document.addEventListener("DOMContentLoaded", initControls);
+		} else {
+			tryInit();
+			initControls();
+		}
+	})();
+</script>
+
+<style>
+	#live2d-wrapper {
+		position: fixed;
+		right: 0.25rem;
+		bottom: 0.25rem;
+		width: 280px;
+		height: 420px;
+		z-index: 40;
+		pointer-events: auto;
+	}
+
+	#live2d-canvas {
+		width: 100%;
+		height: 100%;
+	}
+
+	.live2d-poke {
+		animation: live2d-poke 220ms ease-in-out;
+	}
+
+	@keyframes live2d-poke {
+		0% { transform: translateY(0); }
+		45% { transform: translateY(4px); }
+		100% { transform: translateY(0); }
+	}
+
+	#live2d-speech {
+		position: absolute;
+		left: 1.1rem;
+		bottom: calc(100% - 0.5rem);
+		max-width: 240px;
+		padding: 0.55rem 0.85rem;
+		border-radius: 0.85rem;
+		background: linear-gradient(180deg, rgba(255,255,255,0.92), rgba(255,255,255,0.78));
+		border: 1px solid rgba(0,0,0,0.08);
+		box-shadow: 0 8px 24px rgba(0,0,0,0.08), 0 2px 6px rgba(0,0,0,0.06);
+		color: rgba(0,0,0,0.7);
+		backdrop-filter: blur(6px);
+		opacity: 0;
+		transform: translateY(6px);
+		transition: opacity 160ms ease, transform 160ms ease;
+		pointer-events: none;
+	}
+
+	#live2d-speech.live2d-speech-show {
+		opacity: 1;
+		transform: translateY(0);
+	}
+
+	@media (max-width: 768px) {
+		#live2d-wrapper {
+			display: none;
+		}
+	}
+</style>
