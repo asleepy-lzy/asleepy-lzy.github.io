@@ -1,7 +1,12 @@
 import { type CollectionEntry, getCollection } from "astro:content";
 import I18nKey from "@i18n/i18nKey";
 import { i18n } from "@i18n/translation";
-import { getCategoryUrl } from "@utils/url-utils.ts";
+import {
+	FOLDER_CATEGORY_ROOT,
+	getCategoryUrl,
+	getFolderParamFromSlug,
+	getFolderUrl,
+} from "@utils/url-utils.ts";
 
 // // Retrieve posts and sort them by publication date
 async function getRawSortedPosts() {
@@ -78,6 +83,12 @@ export type Category = {
 	url: string;
 };
 
+export type FolderCategory = {
+	name: string;
+	count: number;
+	url: string;
+};
+
 export async function getCategoryList(): Promise<Category[]> {
 	const allBlogPosts = await getCollection<"posts">("posts", ({ data }) => {
 		return import.meta.env.PROD ? data.draft !== true : true;
@@ -111,4 +122,33 @@ export async function getCategoryList(): Promise<Category[]> {
 		});
 	}
 	return ret;
+}
+
+export async function getFolderCategoryList(): Promise<FolderCategory[]> {
+	const allBlogPosts = await getCollection<"posts">("posts", ({ data }) => {
+		return import.meta.env.PROD ? data.draft !== true : true;
+	});
+
+	const count: { [key: string]: number } = {};
+	const labelMap: { [key: string]: string } = {};
+
+	allBlogPosts.forEach((post) => {
+		const folderParam = getFolderParamFromSlug(post.slug);
+		const label =
+			folderParam === FOLDER_CATEGORY_ROOT
+				? i18n(I18nKey.uncategorized)
+				: folderParam;
+		labelMap[folderParam] = label;
+		count[folderParam] = count[folderParam] ? count[folderParam] + 1 : 1;
+	});
+
+	const keys = Object.keys(count).sort((a, b) => {
+		return labelMap[a].toLowerCase().localeCompare(labelMap[b].toLowerCase());
+	});
+
+	return keys.map((key) => ({
+		name: labelMap[key],
+		count: count[key],
+		url: getFolderUrl(key),
+	}));
 }

@@ -1,6 +1,8 @@
 import I18nKey from "@i18n/i18nKey";
 import { i18n } from "@i18n/translation";
 
+export const FOLDER_CATEGORY_ROOT = "__root__";
+
 export function pathsEqual(path1: string, path2: string) {
 	const normalizedPath1 = path1.replace(/^\/|\/$/g, "").toLowerCase();
 	const normalizedPath2 = path2.replace(/^\/|\/$/g, "").toLowerCase();
@@ -29,6 +31,19 @@ export function getCategoryUrl(category: string | null): string {
 	)
 		return url("/archive/?uncategorized=true");
 	return url(`/archive/?category=${encodeURIComponent(category.trim())}`);
+}
+
+export function getFolderUrl(folder: string): string {
+	if (!folder || folder.trim() === "") {
+		return url(`/archive/?folder=${encodeURIComponent(FOLDER_CATEGORY_ROOT)}`);
+	}
+	return url(`/archive/?folder=${encodeURIComponent(folder.trim())}`);
+}
+
+export function getFolderParamFromSlug(slug: string): string {
+	const firstSlashIndex = slug.indexOf("/");
+	if (firstSlashIndex < 0) return FOLDER_CATEGORY_ROOT;
+	return slug.substring(0, firstSlashIndex);
 }
 
 export function getDir(path: string): string {

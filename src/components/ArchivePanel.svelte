@@ -3,7 +3,7 @@ import { onMount } from "svelte";
 
 import I18nKey from "../i18n/i18nKey";
 import { i18n } from "../i18n/translation";
-import { getPostUrlBySlug } from "../utils/url-utils";
+import { getFolderParamFromSlug, getPostUrlBySlug } from "../utils/url-utils";
 
 export let tags: string[];
 export let categories: string[];
@@ -12,6 +12,7 @@ export let sortedPosts: Post[] = [];
 const params = new URLSearchParams(window.location.search);
 tags = params.has("tag") ? params.getAll("tag") : [];
 categories = params.has("category") ? params.getAll("category") : [];
+const folders = params.has("folder") ? params.getAll("folder") : [];
 const uncategorized = params.get("uncategorized");
 
 interface Post {
@@ -55,6 +56,12 @@ onMount(async () => {
 	if (categories.length > 0) {
 		filteredPosts = filteredPosts.filter(
 			(post) => post.data.category && categories.includes(post.data.category),
+		);
+	}
+
+	if (folders.length > 0) {
+		filteredPosts = filteredPosts.filter((post) =>
+			folders.includes(getFolderParamFromSlug(post.slug)),
 		);
 	}
 
