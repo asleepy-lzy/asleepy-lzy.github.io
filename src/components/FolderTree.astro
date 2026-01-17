@@ -70,7 +70,7 @@ const nodeClass = `folder-node${isRootLevel ? " folder-node-root" : ""}`;
 		gap: 0.75rem;
 		padding: 0.85rem 1.1rem;
 		font-weight: 700;
-		color: #333;
+		color: rgba(0, 0, 0, 0.8);
 		background: transparent;
 		transition: background 140ms ease;
 	}
@@ -80,12 +80,12 @@ const nodeClass = `folder-node${isRootLevel ? " folder-node-root" : ""}`;
 	}
 
 	.folder-node summary:hover {
-		background: #f7f7f7;
+		background: var(--btn-plain-bg-hover);
 	}
 
 	.folder-body {
 		padding: 0.35rem 0.4rem 0.7rem;
-		border-left: 1px solid #e5e7eb;
+		border-left: 1px solid var(--line-divider);
 		margin-left: 1.1rem;
 	}
 
@@ -101,7 +101,7 @@ const nodeClass = `folder-node${isRootLevel ? " folder-node-root" : ""}`;
 		height: 1.25rem;
 		align-items: center;
 		justify-content: center;
-		color: #2b6cb0;
+		color: var(--primary);
 		transition: transform 140ms ease;
 	}
 
@@ -114,15 +114,15 @@ const nodeClass = `folder-node${isRootLevel ? " folder-node-root" : ""}`;
 	}
 
 	.folder-name {
-		color: #333;
+		color: rgba(0, 0, 0, 0.8);
 		font-size: 1.05rem;
 		line-height: 1.6;
 	}
 
 	.folder-count {
 		font-size: 12px;
-		color: #1f5fa5;
-		background: #dbeafe;
+		color: var(--btn-content);
+		background: var(--btn-regular-bg);
 		padding: 0.15rem 0.55rem;
 		border-radius: 999px;
 	}
@@ -136,7 +136,7 @@ const nodeClass = `folder-node${isRootLevel ? " folder-node-root" : ""}`;
 
 	.folder-post-link {
 		display: inline-block;
-		color: #666;
+		color: rgba(0, 0, 0, 0.7);
 		text-decoration: none;
 		position: relative;
 		padding: 0.45rem 0.6rem;
@@ -145,20 +145,20 @@ const nodeClass = `folder-node${isRootLevel ? " folder-node-root" : ""}`;
 	}
 
 	.folder-post-link:hover {
-		color: #1f5fa5;
-		background: #f2f2f2;
+		color: var(--primary);
+		background: var(--btn-plain-bg-hover);
 	}
 
 	.file-icon {
 		margin-right: 0.4rem;
-		color: #2b6cb0;
+		color: var(--primary);
 	}
 
 	.folder-node-root {
-		border: 1px solid #e8e8e8;
+		border: 1px solid var(--line-divider);
 		border-radius: 1rem;
-		background: #ffffff;
-		box-shadow: 0 10px 26px rgba(0,0,0,0.06);
+		background: var(--card-bg);
+		box-shadow: 0 10px 26px rgba(0, 0, 0, 0.06);
 		padding-bottom: 0.2rem;
 	}
 
@@ -170,5 +170,18 @@ const nodeClass = `folder-node${isRootLevel ? " folder-node-root" : ""}`;
 		border-left: none;
 		margin-left: 0;
 		padding: 0.4rem 0.9rem 0.9rem;
+	}
+
+	:global(.dark) .folder-node summary,
+	:global(.dark) .folder-name {
+		color: rgba(255, 255, 255, 0.85);
+	}
+
+	:global(.dark) .folder-post-link {
+		color: rgba(255, 255, 255, 0.7);
+	}
+
+	:global(.dark) .folder-node-root {
+		box-shadow: none;
 	}
 </style>
