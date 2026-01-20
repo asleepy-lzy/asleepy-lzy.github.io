@@ -69,6 +69,7 @@ const height = 420;
 			];
 
 			function onPointerDown(event) {
+				event.preventDefault();
 				dragging = true;
 				moved = false;
 				const rect = wrapper.getBoundingClientRect();
@@ -78,11 +79,15 @@ const height = 420;
 				startTop = rect.top;
 				wrapper.style.left = `${startLeft}px`;
 				wrapper.style.top = `${startTop}px`;
+				wrapper.style.right = "auto";
 				wrapper.style.bottom = "auto";
-				event.currentTarget.setPointerCapture(event.pointerId);
+				if (event.currentTarget.setPointerCapture) {
+					event.currentTarget.setPointerCapture(event.pointerId);
+				}
 			}
 
 			function onPointerMove(event) {
+				event.preventDefault();
 				if (!dragging) return;
 				const dx = event.clientX - startX;
 				const dy = event.clientY - startY;
@@ -98,11 +103,13 @@ const height = 420;
 			function onPointerUp(event) {
 				dragging = false;
 				suppressClick = moved;
-				event.currentTarget.releasePointerCapture(event.pointerId);
+				if (event.currentTarget.releasePointerCapture) {
+					event.currentTarget.releasePointerCapture(event.pointerId);
+				}
 			}
 
-			wrapper.addEventListener("pointerdown", onPointerDown);
-			wrapper.addEventListener("pointermove", onPointerMove);
+			wrapper.addEventListener("pointerdown", onPointerDown, { passive: false });
+			wrapper.addEventListener("pointermove", onPointerMove, { passive: false });
 			wrapper.addEventListener("pointerup", onPointerUp);
 			wrapper.addEventListener("pointercancel", onPointerUp);
 
@@ -140,11 +147,15 @@ const height = 420;
 		height: 420px;
 		z-index: 40;
 		pointer-events: auto;
+		touch-action: none;
+		user-select: none;
+		-webkit-user-select: none;
 	}
 
 	#live2d-canvas {
 		width: 100%;
 		height: 100%;
+		touch-action: none;
 	}
 
 	.live2d-poke {
