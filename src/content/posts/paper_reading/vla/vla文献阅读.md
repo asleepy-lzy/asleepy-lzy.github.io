@@ -1,13 +1,10 @@
 ---
-tags:
-  - rl
-  - llm
-  - vla
-  - study
-draft:
-category: Study
-title: vla文献阅读
-updated: 2026-03-10
+title: vla-tts文献综述
+published: 2026-01-20
+description: "vla-tts 相关文献综述"
+tags: [study, llm , rl]
+category: study
+draft: true
 ---
 
 ### 文章列表
@@ -295,4 +292,3 @@ $$
 即未来更强的 embodied foundation model 很可能是这些路线的融合，而不是单一路线的胜出。这个判断是基于上述几篇论文所推进的方向做出的综合归纳。
 
 ---
-
