@@ -1,4 +1,11 @@
-
+---
+title: vla-tts benchmark
+published: 2026-03-23
+description: 
+tags: [study, llm , rl]
+category: study
+draft: true
+---
 ## Benchmark × Paper
 
 | Benchmark                             | [P1] RoboMonkey | [P2] MG-Select | [P3] VLA-Reasoner | [P4] VLAPS | [P5] AtomicVLA | [P6] TT-VLA | [P7] TACO | [P8] V-GPS |
