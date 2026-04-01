@@ -1,7 +1,7 @@
 ---
 title: vla-tts benchmark
 published: 2026-03-23
-description: 
+description: “vla-tts benchmark”
 tags: [study, llm , rl]
 category: study
 draft: true
